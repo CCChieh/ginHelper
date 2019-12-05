@@ -1,4 +1,4 @@
-module ginHelper
+module github.com/ccchieh/ginHelper
 
 go 1.13
 
