@@ -1,6 +1,6 @@
 # ginHelper
 
-`handlerHelper`是一个自动把`handlerFunc`添加到`Gin`并且设置路由的工具包
+`ginHelper`是一个自动把`handlerFunc`添加到`Gin`并且设置路由的工具包。
 
 1. 在handler文件夹中添加`main.go`文件
 ```
