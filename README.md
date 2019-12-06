@@ -36,7 +36,7 @@ func helloHandler(c *gin.Context) {
 ```
 3. 在gin中调用
 
-```
+```go
 r := gin.New()
 //handler中自动建立路由
 handler.Build(r)
