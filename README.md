@@ -3,7 +3,7 @@
 `ginHelper`是一个自动把`handlerFunc`添加到`Gin`并且设置路由的工具包。
 
 1. 在handler文件夹中添加`main.go`文件
-```
+```go
 type helper struct {
 }
 
@@ -20,7 +20,7 @@ func Build(r gin.IRoutes) {
 2. 之后每次写`handlerFunc`的时候都类似下方的`helloHandler`前面加上一个
 `*helper`的一个方法`HelloHandler()`中设置路由。
 
-```
+```go
 func (h *helper) HelloHandler() (r *handlerHelper.Router) {
     return &handlerHelper.Router{
         Path:   "/HelloHandler",
