@@ -22,23 +22,27 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 		newParam.BeforeBind(c)
 		newParam.Bind(c, newParam)
 		newParam.AfterBind(c)
-		newParam.Service()
+		if newParam.Error() == nil {
+			newParam.Service()
+		}
 		newParam.Result(c)
 	}
 	return handler
 }
 
 func (rt *Router) AddHandler(r gin.IRoutes) {
-	replace := false
-	for i, handler := range rt.Handlers {
-		if handler == nil {
-			//如果内部存在GenHandlerFunc表示占位，那么就替换
-			rt.Handlers[i] = rt.genHandlerFunc()
-			replace = true
+	if rt.Param != nil {
+		replace := false
+		for i, handler := range rt.Handlers {
+			if handler == nil {
+				//如果内部存在GenHandlerFunc表示占位，那么就替换
+				rt.Handlers[i] = rt.genHandlerFunc()
+				replace = true
+			}
 		}
-	}
-	if !replace {
-		rt.Handlers = append(rt.Handlers, rt.genHandlerFunc())
+		if !replace {
+			rt.Handlers = append(rt.Handlers, rt.genHandlerFunc())
+		}
 	}
 	switch strings.ToUpper(rt.Method) {
 	case "GET":
