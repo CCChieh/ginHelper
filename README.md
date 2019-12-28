@@ -1,7 +1,5 @@
 # ginHelper
 
-[toc]
-
 `ginHelper`支持的功能：
 
 * 利用反射自动检索某一包内所有的`HandlerFunc`(即gin的Handler)添加到`Gin`的路由中。
@@ -51,7 +49,7 @@ type parameter interface {
 
 具体执行的流程：
 
-![](https://raw.githubusercontent.com/CCChieh/image/master/20191228111026.png)
+![](https://raw.githubusercontent.com/CCChieh/image/master/%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 ### `ginHelper`中内置的Param结构体
 
