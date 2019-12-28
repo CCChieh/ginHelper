@@ -51,21 +51,7 @@ type parameter interface {
 
 具体执行的流程：
 
-```flow
-st=>start: Start
-e=>end: End
-param=>inputoutput: var param parameter
-BeforeBind=>operation: param.BeforeBind(c *gin.Context)
-Bind=>operation: param.Bind(c *gin.Context, p parameter)
-AfterBind=>operation: param.AfterBind(c *gin.Context)
-BindOK=>condition: param.Error() == nil
-Service=>operation: param.Service()                        
-Result=>operation: param.Result(c *gin.Context)
-
-st->param->BeforeBind->Bind->AfterBind->BindOK
-BindOK(yes)->Service->Result->e
-BindOK(no)->Result->e
-```
+![](https://raw.githubusercontent.com/CCChieh/image/master/20191228111026.png)
 
 ### `ginHelper`中内置的Param结构体
 
