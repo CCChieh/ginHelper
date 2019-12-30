@@ -7,10 +7,10 @@ import (
 
 var GenHandlerFunc gin.HandlerFunc = nil
 
-type parameter interface {
+type Parameter interface {
 	Error() error                     //错误返回
 	BeforeBind(c *gin.Context)        //绑定参数前的操作
-	Bind(c *gin.Context, p parameter) //绑定参数
+	Bind(c *gin.Context, p Parameter) //绑定参数
 	AfterBind(c *gin.Context)         //绑定参数后操作
 	Service()                         //执行具体业务
 	Result(c *gin.Context)            //结果返回
@@ -31,7 +31,7 @@ func (param *Param) Error() error {
 	return param.Err
 }
 
-func (param *Param) Bind(c *gin.Context, p parameter) {
+func (param *Param) Bind(c *gin.Context, p Parameter) {
 	param.Err = c.ShouldBind(p)
 }
 

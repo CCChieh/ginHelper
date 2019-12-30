@@ -7,7 +7,7 @@ import (
 )
 
 type Router struct {
-	Param    parameter
+	Param    Parameter
 	Path     string
 	Method   string
 	Handlers []gin.HandlerFunc
@@ -18,7 +18,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 	paramsType := reflect.TypeOf(rt.Param).Elem()
 	// 根据反射类型对象创建类型实例
 	handler := func(c *gin.Context) {
-		newParam := reflect.New(paramsType).Interface().(parameter)
+		newParam := reflect.New(paramsType).Interface().(Parameter)
 		newParam.BeforeBind(c)
 		newParam.Bind(c, newParam)
 		newParam.AfterBind(c)
