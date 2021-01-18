@@ -7,6 +7,7 @@ import (
 
 var GenHandlerFunc gin.HandlerFunc = nil
 
+// Context 似乎只能通过这种方式传输进来
 type Parameter interface {
 	Error() error                     //错误返回
 	BeforeBind(c *gin.Context)        //绑定参数前的操作
