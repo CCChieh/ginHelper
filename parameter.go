@@ -17,11 +17,13 @@ type Parameter interface {
 }
 
 type Param struct {
+	Context *gin.Context
 	Err error       //存储内部产生的错误
 	Ret interface{} //存储返回的结构体
 }
 
 func (param *Param) BeforeBind(c *gin.Context) {
+	param.Context = c
 }
 
 func (param *Param) AfterBind(c *gin.Context) {
@@ -32,7 +34,7 @@ func (param *Param) Error() error {
 }
 
 func (param *Param) Bind(c *gin.Context, p Parameter) {
-	param.Err = c.ShouldBind(p)
+	param.Err = param.Context.ShouldBind(p)
 }
 
 func (param *Param) Service() {
