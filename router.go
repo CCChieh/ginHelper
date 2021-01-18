@@ -19,13 +19,13 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 	// 根据反射类型对象创建类型实例
 	handler := func(c *gin.Context) {
 		newParam := reflect.New(paramsType).Interface().(Parameter)
-		newParam.BeforeBind(c)
-		newParam.Bind(c, newParam)
-		newParam.AfterBind(c)
+		newParam.Mount(c)
+		newParam.BeforeBind()
+		newParam.Bind()
 		if newParam.Error() == nil {
 			newParam.Service()
 		}
-		newParam.Result(c)
+		newParam.Result()
 	}
 	return handler
 }
