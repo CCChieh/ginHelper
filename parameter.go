@@ -11,7 +11,7 @@ type Parameter interface {
 	Error() error         //错误返回
 	Mount(c *gin.Context) //挂载Context
 	BeforeBind()          //绑定参数前的操作
-	Bind()                //绑定参数
+	Bind(p Parameter)                //绑定参数
 	Service()             //执行具体业务
 	Result()              //结果返回
 }
@@ -33,8 +33,8 @@ func (param *Param) Error() error {
 	return param.Err
 }
 
-func (param *Param) Bind() {
-	param.Err = param.Context.ShouldBind(param)
+func (param *Param) Bind(p Parameter) {
+	param.Err = param.Context.ShouldBind(p)
 }
 
 func (param *Param) Service() {

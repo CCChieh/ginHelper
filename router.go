@@ -21,7 +21,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 		newParam := reflect.New(paramsType).Interface().(Parameter)
 		newParam.Mount(c)
 		newParam.BeforeBind()
-		newParam.Bind()
+		newParam.Bind(newParam)
 		if newParam.Error() == nil {
 			newParam.Service()
 		}
