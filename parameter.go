@@ -13,7 +13,7 @@ type Parameter interface {
 	BeforeBind(c *gin.Context)        //绑定参数前的操作
 	Bind(c *gin.Context, p Parameter) //绑定参数
 	AfterBind(c *gin.Context)         //绑定参数后操作
-	Service()                         //执行具体业务
+	Service(c *gin.Context)           //执行具体业务
 	Result(c *gin.Context)            //结果返回
 }
 
@@ -36,7 +36,7 @@ func (param *Param) Bind(c *gin.Context, p Parameter) {
 	param.Err = c.ShouldBind(p)
 }
 
-func (param *Param) Service() {
+func (param *Param) Service(c *gin.Context) {
 }
 
 func (param *Param) Result(c *gin.Context) {

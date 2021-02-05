@@ -23,7 +23,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 		newParam.Bind(c, newParam)
 		newParam.AfterBind(c)
 		if newParam.Error() == nil {
-			newParam.Service()
+			newParam.Service(c)
 		}
 		newParam.Result(c)
 	}
