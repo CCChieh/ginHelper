@@ -29,7 +29,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 	return handler
 }
 
-func (rt *Router) AddHandler(r gin.IRoutes) {
+func (rt *Router) AddHandler(r GinRouter) {
 	if rt.Param != nil {
 		replace := false
 		for i, handler := range rt.Handlers {

@@ -1,6 +1,7 @@
 package ginHelper
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -20,9 +21,9 @@ func (param *Hello) Service(c *gin.Context) {
 	param.Ret = getMessage(param.Name)
 }
 
-type Helper struct{}
+type HelloHelper struct{}
 
-func (h *Helper) HelloHandler() (r *Router) {
+func (h *HelloHelper) HelloHandler() (r *Router) {
 	return &Router{
 		Param:  new(Hello),
 		Path:   "/hello1",
@@ -46,13 +47,26 @@ func getMessage(name string) string {
 	return "Hello " + name + "!"
 }
 
+var r0 *gin.Engine
 var r1 *gin.Engine
 var r2 *gin.Engine
 
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.ReleaseMode)
+
+	r0 = gin.New()
+	h := New()
+	h.Add(new(HelloHelper), r0)
+	h.Add(new(HelloHelper), r0.Group("api"))
+	fmt.Println(h.View())
+	for path, v := range h.View() {
+		for method, router := range v {
+			fmt.Println(path, method, router.Param)
+		}
+	}
+
 	r1 = gin.New()
-	Build(new(Helper), r1)
+	Build(new(HelloHelper), r1)
 
 	r2 = gin.New()
 	r2.GET("/hello2", Help2)

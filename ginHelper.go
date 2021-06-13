@@ -1,8 +1,6 @@
 package ginHelper
 
 import (
-	"fmt"
-	"path"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +17,6 @@ func Build(h interface{}, r GinRouter) {
 	numMethod := valueOfh.NumMethod()
 	for i := 0; i < numMethod; i++ {
 		rt := valueOfh.Method(i).Call(nil)[0].Interface().(*Router)
-		fmt.Println(path.Join(r.BasePath(), rt.Path))
 		rt.AddHandler(r)
 	}
 }
