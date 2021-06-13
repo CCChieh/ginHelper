@@ -1,8 +1,9 @@
 package ginHelper
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 var GenHandlerFunc gin.HandlerFunc = nil
@@ -41,8 +42,8 @@ func (param *Param) Service(c *gin.Context) {
 
 func (param *Param) Result(c *gin.Context) {
 	if param.Err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": param.Err.Error()})
+		c.String(http.StatusBadRequest, "%s", gin.H{"message": param.Err.Error()})
 	} else {
-		c.JSON(http.StatusOK, param.Ret)
+		c.String(http.StatusOK, "%s", param.Ret)
 	}
 }
