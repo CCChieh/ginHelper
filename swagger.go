@@ -4,14 +4,12 @@ import (
 	"embed"
 	"io/fs"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 //go:embed swagger
 var swaggerFS embed.FS
 
-func Swagger(path string, r *gin.Engine) {
+func Swagger(path string, r GinRouter) {
 	fads, _ := fs.Sub(swaggerFS, "swagger")
-	r.StaticFS(path, http.FS(fads))
+	_ = r.StaticFS(path, http.FS(fads))
 }
