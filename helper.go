@@ -30,4 +30,8 @@ func (h *Helper) Add(helper interface{}, r GinRouter) {
 	}
 }
 
+func (h *Helper) Swagger(r GinRouter) {
+	swagger(r.Group("swagger"))
+}
+
 func (h *Helper) View() routerView { return h.routers }

@@ -8,6 +8,7 @@ import (
 
 type GinRouter interface {
 	gin.IRoutes
+	Group(relativePath string, handlers ...gin.HandlerFunc) *gin.RouterGroup
 	BasePath() string
 }
 

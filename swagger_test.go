@@ -8,6 +8,7 @@ import (
 
 func TestSwagger(t *testing.T) {
 	swaggerR := gin.Default()
-	Swagger("swagger", swaggerR)
+	swagger(swaggerR.Group("swagger"))
 	// TODO解决测试
+	swaggerR.Run(":8888")
 }
