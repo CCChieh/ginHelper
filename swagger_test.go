@@ -8,14 +8,17 @@ import (
 
 func TestSwagger(t *testing.T) {
 	swaggerR := gin.Default()
-	swg := &swagger{
+	swg := &Swagger{
+		Router: swaggerR.Group("swagger"),
 		SwaggerInfo: &SwaggerInfo{
 			BasePath:    "/api",
 			Description: "Swagger test",
 			Title:       "GinHelper Swagger",
 		},
 	}
-	swg.mount(swaggerR.Group("swagger"))
+	swg.Init()
+	swg.AddPath("/testsadfdsdd", "GET")
+	swg.AddPath("/testsadfdsdd", "POST")
 	// TODO解决测试
 	swaggerR.Run(":8888")
 }

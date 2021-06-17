@@ -31,8 +31,15 @@ func (h *Helper) Add(helper interface{}, r GinRouter) {
 }
 
 func (h *Helper) Swagger(r GinRouter) {
-	swg := &swagger{}
-	swg.mount(r.Group("swagger"))
+	swg := &Swagger{
+		Router: r.Group("swagger"),
+		SwaggerInfo: &SwaggerInfo{
+			BasePath:    "/api",
+			Description: "Swagger test",
+			Title:       "GinHelper Swagger",
+		},
+	}
+	swg.Init()
 }
 
 func (h *Helper) View() routerView { return h.routers }
