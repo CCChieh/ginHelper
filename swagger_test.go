@@ -17,8 +17,15 @@ func TestSwagger(t *testing.T) {
 		},
 	}
 	swg.Init()
-	swg.AddPath("/testsadfdsdd", "GET")
-	swg.AddPath("/testsadfdsdd", "POST")
+	swg.AddPath(&SwaggerPath{
+		Path:   "/testsadfdsdd/:id",
+		Method: "GET",
+		Tags:   []string{"dfd"},
+	})
+	swg.AddPath(&SwaggerPath{
+		Path:   "testsadfdsdd",
+		Method: "POST",
+	})
 	// TODO解决测试
 	swaggerR.Run(":8888")
 }
