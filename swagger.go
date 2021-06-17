@@ -67,8 +67,21 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 			Description: sp.Description,
 			Tags:        sp.Tags,
 			Summary:     sp.Summary,
-			Parameters:  []spec.Parameter{},
-			Responses:   &spec.Responses{},
+			Parameters: []spec.Parameter{{
+				Refable:           spec.Refable{},
+				CommonValidations: spec.CommonValidations{},
+				SimpleSchema:      spec.SimpleSchema{},
+				VendorExtensible:  spec.VendorExtensible{},
+				ParamProps: spec.ParamProps{
+					Description:     "",
+					Name:            "Body",
+					In:              "body",
+					Required:        false,
+					Schema:          &spec.Schema{},
+					AllowEmptyValue: false,
+				},
+			}},
+			Responses: &spec.Responses{},
 		},
 	}
 	temp := s.Spec.Paths.Paths[sp.Path]
