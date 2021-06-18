@@ -9,10 +9,24 @@ type routerView map[string]map[string]*Router
 
 type Helper struct {
 	routers routerView
+	Swagger *Swagger
 }
 
 func New() *Helper {
 	return &Helper{routers: routerView{}}
+}
+
+func NewWithSwagger(r GinRouter) *Helper {
+	swg := &Swagger{
+		Router: r.Group("swagger"),
+		SwaggerInfo: &SwaggerInfo{
+			BasePath:    r.BasePath(),
+			Description: "Swagger test",
+			Title:       "GinHelper Swagger",
+		},
+	}
+	swg.Init()
+	return &Helper{routers: routerView{}, Swagger: swg}
 }
 
 func (h *Helper) Add(helper interface{}, r GinRouter) {
@@ -22,26 +36,34 @@ func (h *Helper) Add(helper interface{}, r GinRouter) {
 
 		rt := valueOfh.Method(i).Call(nil)[0].Interface().(*Router)
 		rt.AddHandler(r)
-
-		path := path.Join(r.BasePath(), rt.Path)
-		_, ok := h.routers[path]
-		if !ok {
-			h.routers[path] = map[string]*Router{}
-		}
-		h.routers[path][rt.Method] = rt
+		h.addPath(rt, r)
 	}
 }
 
-func (h *Helper) Swagger(r GinRouter) {
-	swg := &Swagger{
-		Router: r.Group("swagger"),
-		SwaggerInfo: &SwaggerInfo{
-			BasePath:    "/api",
-			Description: "Swagger test",
-			Title:       "GinHelper Swagger",
-		},
+func (h *Helper) addPath(rt *Router, r GinRouter) {
+	if h.Swagger == nil {
+		return
 	}
-	swg.Init()
+	apiPath := path.Join(h.cleanPath(h.Swagger.BasePath, r.BasePath()), rt.Path)
+	h.Swagger.AddPath(&SwaggerPath{
+		Path:   apiPath,
+		Method: rt.Method,
+		Tags:   []string{"dfd"},
+	})
+	_, ok := h.routers[apiPath]
+	if !ok {
+		h.routers[apiPath] = map[string]*Router{}
+	}
+	h.routers[apiPath][rt.Method] = rt
+}
+
+func (h *Helper) cleanPath(basePath, path string) string {
+	for i := 0; i < len(path); i++ {
+		if i >= len(basePath) || basePath[i] != path[i] {
+			return path[i:]
+		}
+	}
+	return ""
 }
 
 func (h *Helper) View() routerView { return h.routers }

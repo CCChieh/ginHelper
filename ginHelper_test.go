@@ -1,7 +1,6 @@
 package ginHelper
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -56,12 +55,6 @@ func TestMain(m *testing.M) {
 	h := New()
 	h.Add(new(HelloHelper), r0)
 	h.Add(new(HelloHelper), r0.Group("api"))
-	fmt.Println(h.View())
-	for path, v := range h.View() {
-		for method, router := range v {
-			fmt.Println(path, method, router.Param)
-		}
-	}
 
 	r1 = gin.New()
 	Build(new(HelloHelper), r1)

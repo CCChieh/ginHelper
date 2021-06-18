@@ -78,7 +78,7 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 				ParamProps: spec.ParamProps{
 					Description: "dfd",
 					Name:        "Body",
-					In:          "body",
+					In:          "query",
 					Required:    false,
 					// Schema:          spec.RefSchema("#/definitions/Pet"),
 					Schema:          test,
