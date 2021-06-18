@@ -18,7 +18,7 @@ func TestSwagger(t *testing.T) {
 	}
 	swg.Init()
 	swg.AddPath(&SwaggerPath{
-		Path:   "/testsadfdsdd/:id",
+		Path:   "/testsadfdsdd/id",
 		Method: "GET",
 		Tags:   []string{"dfd"},
 	})

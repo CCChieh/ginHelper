@@ -26,6 +26,7 @@ type SwaggerPath struct {
 	Description string
 	Summary     string
 	Tags        []string
+	Param       interface{}
 }
 
 type Swagger struct {
@@ -61,6 +62,8 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 			PathItemProps: spec.PathItemProps{},
 		}
 	}
+	test := &spec.Schema{}
+	test.SetProperty("dddsf", *spec.StringProperty())
 	operation := &spec.Operation{
 		VendorExtensible: spec.VendorExtensible{},
 		OperationProps: spec.OperationProps{
@@ -73,23 +76,12 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 				SimpleSchema:      spec.SimpleSchema{},
 				VendorExtensible:  spec.VendorExtensible{},
 				ParamProps: spec.ParamProps{
-					Description:     "",
-					Name:            "Body",
-					In:              "body",
-					Required:        false,
-					Schema:          spec.RefSchema("#/definitions/Pet"),
-					AllowEmptyValue: false,
-				},
-			}, {
-				Refable:           spec.Refable{},
-				CommonValidations: spec.CommonValidations{},
-				SimpleSchema:      spec.SimpleSchema{},
-				VendorExtensible:  spec.VendorExtensible{},
-				ParamProps: spec.ParamProps{
-					Description:     "",
-					Name:            "Bodys",
-					In:              "path",
-					Required:        false,
+					Description: "dfd",
+					Name:        "Body",
+					In:          "body",
+					Required:    false,
+					// Schema:          spec.RefSchema("#/definitions/Pet"),
+					Schema:          test,
 					AllowEmptyValue: false,
 				},
 			}},
@@ -125,8 +117,12 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 	}
 	s.Spec.Paths.Paths[sp.Path] = temp
 	schema := &spec.Schema{}
-	schema.SetProperty("dfd", *spec.StringProperty())
-	schema.SetProperty("dfdee", *spec.Int64Property())
+	schema2 := &spec.Schema{}
+	schema.
+		SetProperty("dfd", *spec.StringProperty()).
+		SetProperty("dfdee", *spec.Int64Property()).
+		SetProperty("aaa", spec.Schema{SchemaProps: spec.SchemaProps{Type: []string{"object"}}}).
+		SetProperty("ikj", *spec.ComposedSchema(*schema2))
 
 	s.Spec.Definitions["Pet"] = *schema
 }
