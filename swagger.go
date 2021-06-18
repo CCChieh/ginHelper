@@ -77,7 +77,19 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 					Name:            "Body",
 					In:              "body",
 					Required:        false,
-					Schema:          &spec.Schema{},
+					Schema:          spec.RefSchema("#/definitions/Pet"),
+					AllowEmptyValue: false,
+				},
+			}, {
+				Refable:           spec.Refable{},
+				CommonValidations: spec.CommonValidations{},
+				SimpleSchema:      spec.SimpleSchema{},
+				VendorExtensible:  spec.VendorExtensible{},
+				ParamProps: spec.ParamProps{
+					Description:     "",
+					Name:            "Bodys",
+					In:              "path",
+					Required:        false,
 					AllowEmptyValue: false,
 				},
 			}},
@@ -112,6 +124,11 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 
 	}
 	s.Spec.Paths.Paths[sp.Path] = temp
+	schema := &spec.Schema{}
+	schema.SetProperty("dfd", *spec.StringProperty())
+	schema.SetProperty("dfdee", *spec.Int64Property())
+
+	s.Spec.Definitions["Pet"] = *schema
 }
 
 func (s *Swagger) genSwaggerJson() {
@@ -136,6 +153,7 @@ func (s *Swagger) genSwaggerJson() {
 			Paths: &spec.Paths{
 				Paths: map[string]spec.PathItem{},
 			},
+			Definitions: spec.Definitions{},
 		},
 	}
 }
