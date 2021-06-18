@@ -1,9 +1,10 @@
 package ginHelper
 
 import (
-	"github.com/gin-gonic/gin"
 	"reflect"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Router struct {
@@ -19,12 +20,12 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 	// 根据反射类型对象创建类型实例
 	handler := func(c *gin.Context) {
 		newParam := reflect.New(paramsType).Interface().(Parameter)
-		newParam.BeforeBind(c)
-		newParam.Bind(c, newParam)
-		if newParam.Error() == nil {
-			newParam.Service(c)
+		err := newParam.Bind(c, newParam)
+		if err != nil {
+			newParam.Result(c, nil, err)
 		}
-		newParam.Result(c)
+		data, err := newParam.Service(c)
+		newParam.Result(c, data, err)
 	}
 	return handler
 }

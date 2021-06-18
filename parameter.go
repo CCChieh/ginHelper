@@ -8,42 +8,33 @@ import (
 
 var GenHandlerFunc gin.HandlerFunc = nil
 
+type Data interface{}
+
 // Context 似乎只能通过这种方式传输进来
 type Parameter interface {
-	Error() error                     //错误返回
-	BeforeBind(c *gin.Context)        //绑定参数前的操作
-	Bind(c *gin.Context, p Parameter) //绑定参数
-	AfterBind(c *gin.Context)         //绑定参数后操作
-	Service(c *gin.Context)           //执行具体业务
-	Result(c *gin.Context)            //结果返回
+	Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
+	Service(c *gin.Context) (data Data, err error) //执行具体业务
+	Result(c *gin.Context, data Data, err error)   //结果返回
 }
 
-type Param struct {
-	Err error       //存储内部产生的错误
-	Ret interface{} //存储返回的结构体
+type BaseParam struct {
 }
 
-func (param *Param) BeforeBind(c *gin.Context) {
+func (param *BaseParam) Bind(c *gin.Context, p Parameter) (err error) {
+	if err := c.ShouldBind(p); err != nil {
+		return err
+	}
+	return err
 }
 
-func (param *Param) AfterBind(c *gin.Context) {
+func (param *BaseParam) Service(c *gin.Context) (data Data, err error) {
+	return nil, nil
 }
 
-func (param *Param) Error() error {
-	return param.Err
-}
-
-func (param *Param) Bind(c *gin.Context, p Parameter) {
-	param.Err = c.ShouldBind(p)
-}
-
-func (param *Param) Service(c *gin.Context) {
-}
-
-func (param *Param) Result(c *gin.Context) {
-	if param.Err != nil {
-		c.String(http.StatusBadRequest, "%s", gin.H{"message": param.Err.Error()})
+func (param *BaseParam) Result(c *gin.Context, data Data, err error) {
+	if err != nil {
+		c.String(http.StatusBadRequest, "%s", gin.H{"message": err.Error()})
 	} else {
-		c.String(http.StatusOK, "%s", param.Ret)
+		c.String(http.StatusOK, "%s", data)
 	}
 }

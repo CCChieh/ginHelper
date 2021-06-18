@@ -13,12 +13,12 @@ import (
 )
 
 type Hello struct {
-	Param
+	BaseParam
 	Name string `form:"name" binding:"required"`
 }
 
-func (param *Hello) Service(c *gin.Context) {
-	param.Ret = getMessage(param.Name)
+func (param *Hello) Service(c *gin.Context) (Data, error) {
+	return getMessage(param.Name), nil
 }
 
 type HelloHelper struct{}
@@ -34,13 +34,10 @@ func (h *HelloHelper) HelloHandler() (r *Router) {
 func Help2(c *gin.Context) {
 	p := &Hello{}
 	if err := c.ShouldBind(p); err != nil {
-		p.Err = err
+		c.String(http.StatusBadRequest, "%s", gin.H{"message": err.Error()})
+		return
 	}
-	if p.Err != nil {
-		c.String(http.StatusBadRequest, "%s", gin.H{"message": p.Err.Error()})
-	} else {
-		c.String(http.StatusOK, "%s", getMessage(p.Name))
-	}
+	c.String(http.StatusOK, "%s", getMessage(p.Name))
 }
 
 func getMessage(name string) string {
@@ -55,6 +52,7 @@ func TestMain(m *testing.M) {
 	gin.SetMode(gin.ReleaseMode)
 
 	r0 = gin.New()
+
 	h := New()
 	h.Add(new(HelloHelper), r0)
 	h.Add(new(HelloHelper), r0.Group("api"))
@@ -78,7 +76,7 @@ func TestMain(m *testing.M) {
 func TestGinHelper(t *testing.T) {
 	name := "Helper"
 	w := httptest.NewRecorder()
-	u := url.URL{Host: "", Path: "hello1", RawQuery: url.Values{"name": []string{name}}.Encode()}
+	u := url.URL{Host: "", Path: "/hello1", RawQuery: url.Values{"name": []string{name}}.Encode()}
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
 	r1.ServeHTTP(w, req)
@@ -90,7 +88,7 @@ func TestGinHelper(t *testing.T) {
 func TestGin(t *testing.T) {
 	name := "Helper"
 	w := httptest.NewRecorder()
-	u := url.URL{Host: "", Path: "hello2", RawQuery: url.Values{"name": []string{name}}.Encode()}
+	u := url.URL{Host: "", Path: "/hello2", RawQuery: url.Values{"name": []string{name}}.Encode()}
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
 	r2.ServeHTTP(w, req)
@@ -104,10 +102,11 @@ func BenchmarkGinHelper(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		name := "Helper"
 		w := httptest.NewRecorder()
-		u := url.URL{Host: "", Path: "hello1", RawQuery: url.Values{"name": []string{name}}.Encode()}
+		u := url.URL{Host: "", Path: "/hello1", RawQuery: url.Values{"name": []string{name}}.Encode()}
 
 		req, _ := http.NewRequest("GET", u.String(), nil)
 		r1.ServeHTTP(w, req)
+		assert.Equal(b, 200, w.Code)
 	}
 }
 
@@ -116,9 +115,10 @@ func BenchmarkGin(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		name := "Helper"
 		w := httptest.NewRecorder()
-		u := url.URL{Host: "", Path: "hello2", RawQuery: url.Values{"name": []string{name}}.Encode()}
+		u := url.URL{Host: "", Path: "/hello2", RawQuery: url.Values{"name": []string{name}}.Encode()}
 
 		req, _ := http.NewRequest("GET", u.String(), nil)
 		r2.ServeHTTP(w, req)
+		assert.Equal(b, 200, w.Code)
 	}
 }
