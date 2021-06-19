@@ -26,9 +26,15 @@ func (h *HelloNewHelper) HelloHandler() (r *Router) {
 
 type HelloParam struct {
 	BaseParam
-	Foo string `form:"foo" binding:"required"`
+	Vparam
+	Foo string `form:"foo"`
+	// Bar string `json:"bar" binding:"required"`
+}
+
+type Vparam struct {
+	Bar string `form:"bar" binding:"required"`
 }
 
 func (param *HelloParam) Service(c *gin.Context) (Data, error) {
-	return getMessage(param.Foo), nil
+	return getMessage(param.Foo) + getMessage(param.Bar), nil
 }

@@ -1,6 +1,7 @@
 package ginHelper
 
 import (
+	"fmt"
 	"path"
 	"reflect"
 )
@@ -33,8 +34,8 @@ func (h *Helper) Add(helper interface{}, r GinRouter) {
 	valueOfh := reflect.ValueOf(helper)
 	elemName := reflect.TypeOf(helper).Elem().Name()
 	numMethod := valueOfh.NumMethod()
-	for i := 0; i < numMethod; i++ {
 
+	for i := 0; i < numMethod; i++ {
 		rt := valueOfh.Method(i).Call(nil)[0].Interface().(*Router)
 		rt.AddHandler(r)
 		h.addPath(rt, r, elemName)
@@ -45,11 +46,18 @@ func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
 	if h.Swagger == nil {
 		return
 	}
+
+	typeOf := reflect.TypeOf(rt.Param).Elem()
+	for i := 0; i < typeOf.NumField(); i++ {
+		fmt.Println(typeOf.Field(i).Name)
+	}
+
 	apiPath := path.Join(h.cleanPath(h.Swagger.BasePath, r.BasePath()), rt.Path)
 	h.Swagger.AddPath(&SwaggerPath{
 		Path:   apiPath,
 		Method: rt.Method,
 		Tags:   []string{elemName},
+		Param:  rt.Param,
 	})
 	_, ok := h.routers[apiPath]
 	if !ok {

@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"net/http"
 	"path"
+	"reflect"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,27 +65,30 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 	}
 	test := &spec.Schema{}
 	test.SetProperty("dddsf", *spec.StringProperty())
+	// js, _ := test.MarshalJSON()
+	// fmt.Println(string(js))
 	operation := &spec.Operation{
 		VendorExtensible: spec.VendorExtensible{},
 		OperationProps: spec.OperationProps{
 			Description: sp.Description,
 			Tags:        sp.Tags,
 			Summary:     sp.Summary,
-			Parameters: []spec.Parameter{{
-				Refable:           spec.Refable{},
-				CommonValidations: spec.CommonValidations{},
-				SimpleSchema:      spec.SimpleSchema{},
-				VendorExtensible:  spec.VendorExtensible{},
-				ParamProps: spec.ParamProps{
-					Description: "dfd",
-					Name:        "Body",
-					In:          "query",
-					Required:    false,
-					// Schema:          spec.RefSchema("#/definitions/Pet"),
-					Schema:          test,
-					AllowEmptyValue: false,
-				},
-			}},
+			Parameters:  s.parameters(sp.Method, sp.Param),
+			// Parameters: []spec.Parameter{{
+			// 	Refable:           spec.Refable{},
+			// 	CommonValidations: spec.CommonValidations{},
+			// 	SimpleSchema:      spec.SimpleSchema{},
+			// 	VendorExtensible:  spec.VendorExtensible{},
+			// 	ParamProps: spec.ParamProps{
+			// 		Description: "dfd",
+			// 		Name:        "Body",
+			// 		In:          "query",
+			// 		Required:    false,
+			// 		// Schema:          spec.RefSchema("#/definitions/Pet"),
+			// 		Schema:          test,
+			// 		AllowEmptyValue: false,
+			// 	},
+			// }},
 			Responses: &spec.Responses{},
 		},
 	}
@@ -152,4 +156,15 @@ func (s *Swagger) genSwaggerJson() {
 			Definitions: spec.Definitions{},
 		},
 	}
+}
+
+func (s *Swagger) parameters(method string, param interface{}) []spec.Parameter {
+	if param == nil {
+		return nil
+	}
+	params := []spec.Parameter{}
+	if method == http.MethodGet {
+		params = append(params, queryParams(reflect.TypeOf(param))...)
+	}
+	return params
 }
