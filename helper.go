@@ -31,16 +31,17 @@ func NewWithSwagger(r GinRouter) *Helper {
 
 func (h *Helper) Add(helper interface{}, r GinRouter) {
 	valueOfh := reflect.ValueOf(helper)
+	elemName := reflect.TypeOf(helper).Elem().Name()
 	numMethod := valueOfh.NumMethod()
 	for i := 0; i < numMethod; i++ {
 
 		rt := valueOfh.Method(i).Call(nil)[0].Interface().(*Router)
 		rt.AddHandler(r)
-		h.addPath(rt, r)
+		h.addPath(rt, r, elemName)
 	}
 }
 
-func (h *Helper) addPath(rt *Router, r GinRouter) {
+func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
 	if h.Swagger == nil {
 		return
 	}
@@ -48,7 +49,7 @@ func (h *Helper) addPath(rt *Router, r GinRouter) {
 	h.Swagger.AddPath(&SwaggerPath{
 		Path:   apiPath,
 		Method: rt.Method,
-		Tags:   []string{"dfd"},
+		Tags:   []string{elemName},
 	})
 	_, ok := h.routers[apiPath]
 	if !ok {
