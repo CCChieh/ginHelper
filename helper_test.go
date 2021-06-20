@@ -19,7 +19,7 @@ type HelloNewHelper struct{}
 func (h *HelloNewHelper) HelloHandler() (r *Router) {
 	return &Router{
 		Param:  new(HelloParam),
-		Path:   "/hello",
+		Path:   "/hello/:kkk",
 		Method: "POST",
 	}
 }

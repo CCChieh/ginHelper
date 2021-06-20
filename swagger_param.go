@@ -2,11 +2,33 @@ package ginHelper
 
 import (
 	"fmt"
+	"path"
 	"reflect"
+	"strings"
 	"unicode"
 
 	"github.com/go-openapi/spec"
 )
+
+func pathParams(sp *SwaggerPath) (params []spec.Parameter) {
+	paths := strings.Split(sp.Path, "/")
+	fmt.Println(paths)
+	newPath := "/"
+	for _, p := range paths {
+		if len(p) <= 1 || p[0] != ':' {
+			newPath = path.Join(newPath, p)
+			continue
+		}
+		// fmt.Println(len(p))
+
+		params = append(params, *spec.PathParam(p[1:]))
+		newPath = path.Join(newPath, "{"+p[1:]+"}")
+		continue
+
+	}
+	sp.Path = newPath
+	return params
+}
 
 func queryParams(typeOf reflect.Type) []spec.Parameter {
 	typeOf = typeElem(typeOf)

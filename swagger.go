@@ -65,31 +65,15 @@ func (s *Swagger) AddPath(sp *SwaggerPath) {
 	}
 	test := &spec.Schema{}
 	test.SetProperty("dddsf", *spec.StringProperty())
-	// js, _ := test.MarshalJSON()
-	// fmt.Println(string(js))
+
 	operation := &spec.Operation{
 		VendorExtensible: spec.VendorExtensible{},
 		OperationProps: spec.OperationProps{
 			Description: sp.Description,
 			Tags:        sp.Tags,
 			Summary:     sp.Summary,
-			Parameters:  s.parameters(sp.Method, sp.Param),
-			// Parameters: []spec.Parameter{{
-			// 	Refable:           spec.Refable{},
-			// 	CommonValidations: spec.CommonValidations{},
-			// 	SimpleSchema:      spec.SimpleSchema{},
-			// 	VendorExtensible:  spec.VendorExtensible{},
-			// 	ParamProps: spec.ParamProps{
-			// 		Description: "dfd",
-			// 		Name:        "Body",
-			// 		In:          "query",
-			// 		Required:    false,
-			// 		// Schema:          spec.RefSchema("#/definitions/Pet"),
-			// 		Schema:          test,
-			// 		AllowEmptyValue: false,
-			// 	},
-			// }},
-			Responses: &spec.Responses{},
+			Parameters:  s.parameters(sp),
+			Responses:   &spec.Responses{},
 		},
 	}
 	temp := s.Spec.Paths.Paths[sp.Path]
@@ -158,11 +142,14 @@ func (s *Swagger) genSwaggerJson() {
 	}
 }
 
-func (s *Swagger) parameters(method string, param interface{}) []spec.Parameter {
+func (s *Swagger) parameters(sp *SwaggerPath) (params []spec.Parameter) {
+	param := sp.Param
+	method := sp.Method
+	params = append(params, pathParams(sp)...)
+
 	if param == nil {
 		return nil
 	}
-	params := []spec.Parameter{}
 	if method == http.MethodGet {
 		params = append(params, queryParams(reflect.TypeOf(param))...)
 	}
