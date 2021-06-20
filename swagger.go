@@ -166,5 +166,6 @@ func (s *Swagger) parameters(method string, param interface{}) []spec.Parameter 
 	if method == http.MethodGet {
 		params = append(params, queryParams(reflect.TypeOf(param))...)
 	}
+	params = append(params, *spec.BodyParam("body", JsonSchemas(reflect.TypeOf(param))))
 	return params
 }

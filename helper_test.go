@@ -20,19 +20,32 @@ func (h *HelloNewHelper) HelloHandler() (r *Router) {
 	return &Router{
 		Param:  new(HelloParam),
 		Path:   "/hello",
-		Method: "GET",
+		Method: "POST",
 	}
 }
 
 type HelloParam struct {
 	BaseParam
 	Vparam
-	Foo string `form:"foo"`
+	Vparam1 Vparam
+	Vparam2 *Vparam
+	Foo     string `json:"foo4"`
+	Va
+	Ch    byte
+	Arr   []string
+	Arr2  []int
+	Arr3  []Vparam
+	Int   int
+	Float float32
+	Bool  bool
 	// Bar string `json:"bar" binding:"required"`
 }
 
+type Va bool
+
 type Vparam struct {
-	Bar string `form:"bar" binding:"required"`
+	Bar  string `json:"bar" binding:"required"`
+	Bare bool   `json:"bare" binding:"required"`
 }
 
 func (param *HelloParam) Service(c *gin.Context) (Data, error) {
