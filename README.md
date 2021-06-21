@@ -85,6 +85,11 @@ type testBodyParam struct {
 	FooStruct3 *FooStruct
 }
 
+func (param *testBodyParam) Handler(c *gin.Context) (data ginHelper.Data, err error) {
+	return param, nil
+}
+
+
 func Example() {
 	router := gin.Default()
 	r := router.Group("api")
