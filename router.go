@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type GinRouter interface {
+	gin.IRoutes
+	Group(relativePath string, handlers ...gin.HandlerFunc) *gin.RouterGroup
+	BasePath() string
+}
+
 type GroupRouter struct {
 	Path    string
 	Name    string
@@ -29,6 +35,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 		err := newParam.Bind(c, newParam)
 		if err != nil {
 			newParam.Result(c, nil, err)
+			return
 		}
 		data, err := newParam.Handler(c)
 		newParam.Result(c, data, err)

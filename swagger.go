@@ -44,7 +44,7 @@ func (s *Swagger) Init() {
 	if s.Spec == nil {
 		s.genSwaggerJson()
 	}
-	// s.AddPath("/testsadfds", "GET")
+
 	s.Router.Use(func(c *gin.Context) {
 		if path.Base(c.Request.URL.Path) == "swagger.json" {
 			c.Writer.Header().Set("content-type", "text/json")

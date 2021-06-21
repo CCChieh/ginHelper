@@ -1,7 +1,6 @@
 package ginHelper
 
 import (
-	"fmt"
 	"path"
 	"reflect"
 	"strings"
@@ -12,14 +11,12 @@ import (
 
 func pathParams(sp *SwaggerApi) (params []spec.Parameter) {
 	paths := strings.Split(sp.Path, "/")
-	fmt.Println(paths)
 	newPath := "/"
 	for _, p := range paths {
 		if len(p) <= 1 || p[0] != ':' {
 			newPath = path.Join(newPath, p)
 			continue
 		}
-		// fmt.Println(len(p))
 
 		params = append(params, *spec.PathParam(p[1:]))
 		newPath = path.Join(newPath, "{"+p[1:]+"}")
@@ -76,7 +73,6 @@ func JsonSchemas(typeOf reflect.Type) (schema *spec.Schema) {
 	case reflect.String:
 		return spec.StringProperty()
 	default:
-		fmt.Println("unknow", typeOf)
 		return &spec.Schema{}
 	}
 }
@@ -86,7 +82,6 @@ func kindArray2Schema(typeOf reflect.Type) *spec.Schema {
 func kindStruct2Schema(typeOf reflect.Type) *spec.Schema {
 	schema := &spec.Schema{SchemaProps: spec.SchemaProps{Type: []string{"object"},
 		AdditionalProperties: nil}}
-	// fieldNum := typeOf.NumField()
 	fields := getAllField(typeOf)
 	for len(fields) > 0 {
 		field := fields[0]

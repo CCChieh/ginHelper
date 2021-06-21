@@ -1,9 +1,7 @@
 package ginHelper
 
 import (
-	"fmt"
 	"path"
-	"reflect"
 )
 
 type routerView map[string]map[string]*Router
@@ -38,11 +36,6 @@ func (h *Helper) Add(gh *GroupRouter, r GinRouter) {
 func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
 	if h.Swagger == nil {
 		return
-	}
-
-	typeOf := reflect.TypeOf(rt.Param).Elem()
-	for i := 0; i < typeOf.NumField(); i++ {
-		fmt.Println(typeOf.Field(i).Name)
 	}
 
 	apiPath := path.Join(h.cleanPath(h.Swagger.BasePath, r.BasePath()), rt.Path)
