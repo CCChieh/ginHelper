@@ -15,13 +15,13 @@ import (
 //go:embed swagger
 var swaggerFS embed.FS
 
-type ContactInfo spec.ContactInfo
+type ContactInfoProps spec.ContactInfoProps
 
 type SwaggerInfo struct {
 	Description string
 	Title       string
 	Version     string
-	ContactInfo
+	ContactInfoProps
 }
 
 type SwaggerApi struct {
@@ -119,7 +119,7 @@ func (s *Swagger) genSwaggerJson() {
 					Description: s.SwaggerInfo.Description,
 					Title:       s.SwaggerInfo.Title,
 					Contact: &spec.ContactInfo{
-						ContactInfoProps: s.ContactInfoProps,
+						ContactInfoProps: spec.ContactInfoProps(s.ContactInfoProps),
 					},
 					Version: s.SwaggerInfo.Version,
 				},
