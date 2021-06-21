@@ -1,184 +1,114 @@
 # ginHelper
 
+之前接触过Java的Swagger，非常简单易用，但是Golang中一直没有合适的Swagger实现。现在比较流行的方案是使用注释实现，需要手动写注释，总感觉不是特别方便，所以就自己实现了个该工具。坑是挖了很久，刚学go的时候挖的，之后无奈搬砖去写java，一直没机会填坑，最近又重新写go了，所以回来慢慢填坑。
+
 `ginHelper`支持的功能：
 
-* 利用反射自动检索某一包内所有的`HandlerFunc`(即gin的Handler)添加到`Gin`的路由中。
-* 引入`parameter`接口的概念，通过定义实现该接口的结构体后可以自动生成一个`gin.HandlerFunc`,利用该特点可以极大地降低handler和service的代码重复。
+* 整合gin的参数绑定与路由设置
+* 非注释自动生成swagger
 
-示例在<https://github.com/CCChieh/ginHelper_example>
 
-## 自动检索包下的handler
+## 路由与参数
 
-1. 在存放`handlerFunc`的文件夹中任意位置写下
+为了自动绑定参数和生成路由，需要先了解下面几个概念：
 
-    ```go
-    type helper struct {
-    }
-    ```
-
-2. 之后每次写`handlerFunc`的时候都类似下方的`helloHandler`前面加上一个
-    `*helper`的一个方法`HelloHandler()`中设置路由。
-
-    ```go
-    func (h *Helper) HelloHandler() (r *ginHelper.Router) {
-        handler := func(c *gin.Context) {
-            c.String(http.StatusOK, "Hello world!")
-        }
-        return &ginHelper.Router{
-            Path:   "/HelloHandler",
-            Method: "GET",
-            Handlers: []gin.HandlerFunc{
-                handler,
-            },
-        }
-    }
-
-    ```
-
-## `parameter`接口
-
-### `parameter`接口的定义
+* GroupRouter 路由组
 
 ```go
-type parameter interface {
- Error() error                     //错误返回
- BeforeBind(c *gin.Context)        //绑定参数前的操作
- Bind(c *gin.Context, p parameter) //绑定参数
- AfterBind(c *gin.Context)         //绑定参数后操作
- Service(c *gin.Context)                         //执行具体业务
- Result(c *gin.Context)            //结果返回
+type GroupRouter struct {
+	Path   string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
+	Name   string   // 路由组的名称
+	Routes []*Route // 路由组中的具体路由
 }
 ```
 
-具体执行的流程：
+定义一组相关的路由
 
-![](https://raw.githubusercontent.com/CCChieh/image/master/%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
-
-### `ginHelper`中内置的Param结构体
-
-在`ginHelper`中实现了一个最基本的`parameter`接口的`Param`结构体:
+* Router 路由
 
 ```go
-type Param struct {
- Err error //存储内部产生的错误
- Ret interface{} //存储返回的结构体
-}
-
-func (param *Param) BeforeBind(c *gin.Context) {
-}
-
-func (param *Param) AfterBind(c *gin.Context) {
-}
-
-func (param *Param) Error() error {
- return param.Err
-}
-
-func (param *Param) Bind(c *gin.Context, p parameter) {
- param.Err = c.ShouldBind(p)
-}
-
-func (param *Param) Service(c *gin.Context) {
-}
-
-func (param *Param) Result(c *gin.Context) {
- if param.Err != nil {
-  c.JSON(http.StatusBadRequest, gin.H{"message": param.Err.Error()})
- } else {
-  c.JSON(http.StatusOK, param.Ret)
- }
+type Route struct {
+	Param    Parameter         // 接口的参数实现
+	Path     string            // 接口的路径
+	Method   string            // 接口的方法
+	Handlers []gin.HandlerFunc // 接口的额外处理函数
 }
 ```
 
-### 使用`parameter`接口实现handler以及service
+* 参数绑定
 
-1. 自定义一个参数结构体
-
-   这里自定义一个Hello结构体，引用结构体`ginHelper.Param`之后 重写Service方法。
-
-   ```go
-   type Hello struct {
-    ginHelper.Param
-    Name      string `form:"name" binding:"required"`
-   }
-   
-   func (param *Hello) Service() {
-    ginHelper.Ret = gin.H{"message": "Hello " + param.Name + "!"}
-   }
-   ```
-
-   注意这里`Name`的tag使用参考gin的[模型绑定和验证](https://gin-gonic.com/zh-cn/docs/examples/binding-and-validation/)，对于其他方法参见`parameter`接口，可以重写该接口的所有方法来实现自定义。
-
-   当然也可以不使用`ginHelper.Param`自己实现`parameter`接口的所有方法。可以根据自己的需求选择不同的方式。
-
-2. 进一步简化`HelloHandler()`
-
-   在引进了`parameter`接口后`HelloHandler()`将被进一步简化为：
-
-   ```go
-   func (h *Helper) HelloHandler() (r *ginHelper.Router) {
-    return &ginHeXlper.Router{
-     Param:  new(service.Hello),
-     Path:   "/",
-     Method: "GET",
-    }
-   }
-   ```
-
-3. 使用中间件
-
-   这里内置了个变量`ginHelper.GenHandlerFunc`其值为`nil`，可以用来表示将会自动生成的handler，所以在使用中间件后的形式可以为：
-
-   ```go
-   func (h *Helper) AdminHandler() (r *ginHelper.Router) {
-    return &ginHelper.Router{
-     Param:  new(service.Hello),
-     Path:   "/admin",
-     Method: "GET",
-     Handlers: []gin.HandlerFunc{
-      middleware.AdminMiddleware(),
-      ginHelper.GenHandlerFunc,
-     },
-    }
-   }
-   ```
-
-   `middleware.AdminMiddleware()`是一个身份验证的中间件，这样子就可以定义中间件和自动生成的handler之间的顺序关系，当然如果默认自动生成的handler放到最后的话，写法还可以省略为：
-
-   ```go
-   func (h *Helper) AdminHandler() (r *ginHelper.Router) {
-    return &ginHelper.Router{
-     Param:  new(service.Hello),
-     Path:   "/admin",
-     Method: "GET",
-     Handlers: []gin.HandlerFunc{
-      middleware.AdminMiddleware(),
-     },
-    }
-   }
-   ```
-
-## 使用`ginHelper`自动构建路由
-
-在运行gin的时候
+为了成功绑定参数，并降低代码的重复度，需要参数实现`Parameter`接口：
 
 ```go
-r := gin.New()
+type Parameter interface {
+	Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
+	Handler(c *gin.Context) (data Data, err error) //执行具体业务
+	Result(c *gin.Context, data Data, err error)   //结果返回
+}
 ```
 
-自动导入handler包中的所有路由
+为了避免不必要的重复实现接口，可以使用结构体嵌入，比如使用内置的`BaseParam`嵌入。
+
+## 基本使用
+
+包内包含两种初始化方法：不需要Swagger的`func New() *Helper`,和自动生成swagger的`func NewWithSwagger(swaggerInfo *SwaggerInfo, r GinRouter) *Helper`
+
+示例：
 
 ```go
-ginHelper.Build(new(handler.Helper), r)
+// 定义一个Group
+var testGroup = &ginHelper.GroupRouter{
+	Path: "test",
+	Name: "Mytest",
+	Routes: []*ginHelper.Route{
+		{
+			Param:  new(testBodyParam),
+			Path:   "/hello/:id",
+			Method: "POST",
+		}},
+}
+
+type FooStruct struct {
+	FooA string `binding:"required" `
+	FooB *bool  `binding:"required"`
+}
+
+// 接口的参数
+type testBodyParam struct {
+	ginHelper.BaseParam `json:"-"`
+	Foo       string    `binding:"required"`
+	FooName   string    `json:"fName" binding:"required"`
+	FooInt    int       `binding:"required"`
+	FooIgnore string    `json:"-"`
+	FooStruct
+	FooStruct2 FooStruct
+	FooStruct3 *FooStruct
+}
+
+func Example() {
+	router := gin.Default()
+	r := router.Group("api")
+    // 如果不需要swagger，可以使用New初始化
+	h := ginHelper.NewWithSwagger(&ginHelper.SwaggerInfo{
+		Description: "swagger test page",
+		Title:       "Swagger Test Page",
+		Version:     "0.0.1",
+		ContactInfoProps: ginHelper.ContactInfoProps{
+			Name:  "zzj",
+			URL:   "https://zzj.cool",
+			Email: "email@zzj.cool",
+		},
+	}, r)
+	h.Add(testGroup, r)
+	_ = router.Run(":8888")
+}
 ```
 
-将user包中所有的路由导入到同一个路由组中
-
-```go
-ginHelper.Build(new(user.Helper), r.Group("/user"))
-```
+如果开启了swagger的话，访问`http://127.0.0.1:8888/api/swagger`即可。
 
 性能测试：
+
+直接使用Gin和使用GinHelper生成的接口，两者性能差别不大：
 
 go test -bench=. -benchmem -run=none
 

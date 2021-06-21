@@ -10,7 +10,6 @@ var GenHandlerFunc gin.HandlerFunc = nil
 
 type Data interface{}
 
-// Context 似乎只能通过这种方式传输进来
 type Parameter interface {
 	Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
 	Handler(c *gin.Context) (data Data, err error) //执行具体业务
@@ -28,7 +27,7 @@ func (param *BaseParam) Bind(c *gin.Context, p Parameter) (err error) {
 }
 
 func (param *BaseParam) Handler(c *gin.Context) (data Data, err error) {
-	return nil, nil
+	return param, nil
 }
 
 func (param *BaseParam) Result(c *gin.Context, data Data, err error) {

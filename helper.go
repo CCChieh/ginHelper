@@ -4,7 +4,7 @@ import (
 	"path"
 )
 
-type routerView map[string]map[string]*Router
+type routerView map[string]map[string]*Route
 
 type Helper struct {
 	routers routerView
@@ -27,13 +27,13 @@ func NewWithSwagger(swaggerInfo *SwaggerInfo, r GinRouter) *Helper {
 
 func (h *Helper) Add(gh *GroupRouter, r GinRouter) {
 	r = r.Group(gh.Path)
-	for _, rt := range gh.Routers {
+	for _, rt := range gh.Routes {
 		rt.AddHandler(r)
 		h.addPath(rt, r, gh.Name)
 	}
 }
 
-func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
+func (h *Helper) addPath(rt *Route, r GinRouter, elemName string) {
 	if h.Swagger == nil {
 		return
 	}
@@ -47,7 +47,7 @@ func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
 	})
 	_, ok := h.routers[apiPath]
 	if !ok {
-		h.routers[apiPath] = map[string]*Router{}
+		h.routers[apiPath] = map[string]*Route{}
 	}
 	h.routers[apiPath][rt.Method] = rt
 }

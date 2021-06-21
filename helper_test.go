@@ -15,7 +15,7 @@ import (
 var testGroup = &GroupRouter{
 	Path: "api",
 	Name: "Mytest",
-	Routers: []*Router{
+	Routes: []*Route{
 		{
 			Param:  new(testBodyParam),
 			Path:   "/hello/:id",
@@ -37,27 +37,6 @@ type testBodyParam struct {
 	FooStruct
 	FooStruct2 FooStruct
 	FooStruct3 *FooStruct
-}
-
-func (param *testBodyParam) Handler(c *gin.Context) (Data, error) {
-	return param, nil
-}
-
-func TestHelperWithSwagger(t *testing.T) {
-	router := gin.Default()
-	r := router.Group("api")
-	h := NewWithSwagger(&SwaggerInfo{
-		Description: "swagger test page",
-		Title:       "Swagger Test Page",
-		Version:     "0.0.1",
-		ContactInfoProps: ContactInfoProps{
-			Name:  "zzj",
-			URL:   "https://zzj.cool",
-			Email: "email@zzj.cool",
-		},
-	}, r)
-	h.Add(testGroup, r)
-	router.Run(":8888")
 }
 
 func TestNew(t *testing.T) {
@@ -125,11 +104,12 @@ func TestNew(t *testing.T) {
 			req, _ := http.NewRequest(tt.method, tt.path, bytes.NewBuffer(jsonParam))
 			req.Header.Set("Content-Type", "application/json")
 			router.ServeHTTP(w, req)
-			fmt.Println(w.Body.String())
+
 			got := reflect.New(reflect.TypeOf(tt.want).Elem()).Interface()
 			err = json.Unmarshal(w.Body.Bytes(), got)
+
 			if err != nil {
-				t.Fatalf("Json UnMarshal fail for: %v", w.Body.Bytes())
+				t.Fatalf("Json UnMarshal fail for: %v,%v", w.Body.Bytes(), err)
 
 			}
 			if !reflect.DeepEqual(got, tt.want) {

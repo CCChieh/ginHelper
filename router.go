@@ -14,19 +14,19 @@ type GinRouter interface {
 }
 
 type GroupRouter struct {
-	Path    string
-	Name    string
-	Routers []*Router
+	Path   string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
+	Name   string   // 路由组的名称
+	Routes []*Route // 路由组中的具体路由
 }
 
-type Router struct {
-	Param    Parameter
-	Path     string
-	Method   string
-	Handlers []gin.HandlerFunc
+type Route struct {
+	Param    Parameter         // 接口的参数
+	Path     string            // 接口的路径
+	Method   string            // 接口的方法
+	Handlers []gin.HandlerFunc // 接口的处理函数
 }
 
-func (rt *Router) genHandlerFunc() gin.HandlerFunc {
+func (rt *Route) genHandlerFunc() gin.HandlerFunc {
 	// 取变量a的反射类型对象
 	paramsType := reflect.TypeOf(rt.Param).Elem()
 	// 根据反射类型对象创建类型实例
@@ -43,7 +43,7 @@ func (rt *Router) genHandlerFunc() gin.HandlerFunc {
 	return handler
 }
 
-func (rt *Router) AddHandler(r GinRouter) {
+func (rt *Route) AddHandler(r GinRouter) {
 	if rt.Param != nil {
 		replace := false
 		for i, handler := range rt.Handlers {

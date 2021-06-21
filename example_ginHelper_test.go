@@ -18,5 +18,5 @@ func ExampleNewWithSwagger() {
 		},
 	}, r)
 	h.Add(testGroup, r)
-	router.Run(":8888")
+	_ = router.Run(":8888")
 }
