@@ -17,12 +17,12 @@ func TestSwagger(t *testing.T) {
 		},
 	}
 	swg.Init()
-	swg.AddPath(&SwaggerPath{
+	swg.AddPath(&SwaggerApi{
 		Path:   "/testsadfdsdd/id",
 		Method: "GET",
 		Tags:   []string{"dfd"},
 	})
-	swg.AddPath(&SwaggerPath{
+	swg.AddPath(&SwaggerApi{
 		Path:   "testsadfdsdd",
 		Method: "POST",
 	})

@@ -30,15 +30,11 @@ func NewWithSwagger(r GinRouter) *Helper {
 	return &Helper{routers: routerView{}, Swagger: swg}
 }
 
-func (h *Helper) Add(helper interface{}, r GinRouter) {
-	valueOfh := reflect.ValueOf(helper)
-	elemName := reflect.TypeOf(helper).Elem().Name()
-	numMethod := valueOfh.NumMethod()
-
-	for i := 0; i < numMethod; i++ {
-		rt := valueOfh.Method(i).Call(nil)[0].Interface().(*Router)
+func (h *Helper) Add(gh *GroupRouter, r GinRouter) {
+	r = r.Group(gh.Path)
+	for _, rt := range gh.Routers {
 		rt.AddHandler(r)
-		h.addPath(rt, r, elemName)
+		h.addPath(rt, r, gh.Name)
 	}
 }
 
@@ -53,7 +49,7 @@ func (h *Helper) addPath(rt *Router, r GinRouter, elemName string) {
 	}
 
 	apiPath := path.Join(h.cleanPath(h.Swagger.BasePath, r.BasePath()), rt.Path)
-	h.Swagger.AddPath(&SwaggerPath{
+	h.Swagger.AddPath(&SwaggerApi{
 		Path:   apiPath,
 		Method: rt.Method,
 		Tags:   []string{elemName},

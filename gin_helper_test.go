@@ -52,9 +52,8 @@ func TestMain(m *testing.M) {
 
 	r0 = gin.New()
 
-	h := New()
-	h.Add(new(HelloHelper), r0)
-	h.Add(new(HelloHelper), r0.Group("api"))
+	// h := New()
+	// h.Add(new(HelloHelper), r0)
 
 	r1 = gin.New()
 	Build(new(HelloHelper), r1)

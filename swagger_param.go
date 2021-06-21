@@ -10,7 +10,7 @@ import (
 	"github.com/go-openapi/spec"
 )
 
-func pathParams(sp *SwaggerPath) (params []spec.Parameter) {
+func pathParams(sp *SwaggerApi) (params []spec.Parameter) {
 	paths := strings.Split(sp.Path, "/")
 	fmt.Println(paths)
 	newPath := "/"

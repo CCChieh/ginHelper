@@ -10,18 +10,19 @@ func TestHelper(t *testing.T) {
 	router := gin.Default()
 	r := router.Group("api")
 	h := NewWithSwagger(r)
-	h.Add(new(HelloNewHelper), r)
+	h.Add(GroupR, r)
 	router.Run(":8888")
 }
 
-type HelloNewHelper struct{}
-
-func (h *HelloNewHelper) HelloHandler() (r *Router) {
-	return &Router{
-		Param:  new(HelloParam),
-		Path:   "/hello/:kkk",
-		Method: "POST",
-	}
+var GroupR = &GroupRouter{
+	Path: "my",
+	Name: "Mytest",
+	Routers: []*Router{
+		{
+			Param:  new(HelloParam),
+			Path:   "/hello/:kkk",
+			Method: "POST",
+		}},
 }
 
 type HelloParam struct {
@@ -48,6 +49,6 @@ type Vparam struct {
 	Bare bool   `json:"bare" binding:"required"`
 }
 
-func (param *HelloParam) Service(c *gin.Context) (Data, error) {
+func (param *HelloParam) Handler(c *gin.Context) (Data, error) {
 	return getMessage(param.Foo) + getMessage(param.Bar), nil
 }

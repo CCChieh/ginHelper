@@ -13,7 +13,7 @@ type Data interface{}
 // Context 似乎只能通过这种方式传输进来
 type Parameter interface {
 	Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
-	Service(c *gin.Context) (data Data, err error) //执行具体业务
+	Handler(c *gin.Context) (data Data, err error) //执行具体业务
 	Result(c *gin.Context, data Data, err error)   //结果返回
 }
 
@@ -27,7 +27,7 @@ func (param *BaseParam) Bind(c *gin.Context, p Parameter) (err error) {
 	return err
 }
 
-func (param *BaseParam) Service(c *gin.Context) (data Data, err error) {
+func (param *BaseParam) Handler(c *gin.Context) (data Data, err error) {
 	return nil, nil
 }
 

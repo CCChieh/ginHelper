@@ -21,7 +21,7 @@ type SwaggerInfo struct {
 	Title       string
 }
 
-type SwaggerPath struct {
+type SwaggerApi struct {
 	Path        string
 	Method      string
 	Description string
@@ -54,7 +54,7 @@ func (s *Swagger) Init() {
 	_ = s.Router.StaticFS("", http.FS(swaggerDir))
 }
 
-func (s *Swagger) AddPath(sp *SwaggerPath) {
+func (s *Swagger) AddPath(sp *SwaggerApi) {
 	sp.Path = path.Join("/", sp.Path)
 	sp.Path = path.Clean(sp.Path)
 	_, ok := s.Spec.Paths.Paths[sp.Path]
@@ -142,7 +142,7 @@ func (s *Swagger) genSwaggerJson() {
 	}
 }
 
-func (s *Swagger) parameters(sp *SwaggerPath) (params []spec.Parameter) {
+func (s *Swagger) parameters(sp *SwaggerApi) (params []spec.Parameter) {
 	param := sp.Param
 	method := sp.Method
 	params = append(params, pathParams(sp)...)
