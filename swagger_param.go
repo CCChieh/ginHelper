@@ -119,10 +119,6 @@ func kindStruct2Schema(typeOf reflect.Type) *spec.Schema {
 	return schema
 }
 
-func kindBool2Schema(typeOf reflect.Type) *spec.Schema {
-	return spec.BoolProperty()
-}
-
 func typeElem(typeOf reflect.Type) reflect.Type {
 	if typeOf.Kind() == reflect.Ptr {
 		typeOf = typeOf.Elem()

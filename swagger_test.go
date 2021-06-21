@@ -9,9 +9,9 @@ import (
 func TestSwagger(t *testing.T) {
 	swaggerR := gin.Default()
 	swg := &Swagger{
-		Router: swaggerR.Group("swagger"),
+		Router:   swaggerR.Group("swagger"),
+		BasePath: "/api",
 		SwaggerInfo: &SwaggerInfo{
-			BasePath:    "/api",
 			Description: "Swagger test",
 			Title:       "GinHelper Swagger",
 		},

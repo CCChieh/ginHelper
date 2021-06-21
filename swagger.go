@@ -15,10 +15,13 @@ import (
 //go:embed swagger
 var swaggerFS embed.FS
 
+type ContactInfo spec.ContactInfo
+
 type SwaggerInfo struct {
-	BasePath    string
 	Description string
 	Title       string
+	Version     string
+	ContactInfo
 }
 
 type SwaggerApi struct {
@@ -31,7 +34,8 @@ type SwaggerApi struct {
 }
 
 type Swagger struct {
-	Router GinRouter
+	BasePath string
+	Router   GinRouter
 	*SwaggerInfo
 	Spec *spec.Swagger
 }
@@ -104,15 +108,6 @@ func (s *Swagger) AddPath(sp *SwaggerApi) {
 
 	}
 	s.Spec.Paths.Paths[sp.Path] = temp
-	schema := &spec.Schema{}
-	schema2 := &spec.Schema{}
-	schema.
-		SetProperty("dfd", *spec.StringProperty()).
-		SetProperty("dfdee", *spec.Int64Property()).
-		SetProperty("aaa", spec.Schema{SchemaProps: spec.SchemaProps{Type: []string{"object"}}}).
-		SetProperty("ikj", *spec.ComposedSchema(*schema2))
-
-	s.Spec.Definitions["Pet"] = *schema
 }
 
 func (s *Swagger) genSwaggerJson() {
@@ -124,16 +119,12 @@ func (s *Swagger) genSwaggerJson() {
 					Description: s.SwaggerInfo.Description,
 					Title:       s.SwaggerInfo.Title,
 					Contact: &spec.ContactInfo{
-						ContactInfoProps: spec.ContactInfoProps{
-							Name:  "zzj",
-							URL:   "https://zzj.cool",
-							Email: "email@zzj.cool",
-						},
+						ContactInfoProps: s.ContactInfoProps,
 					},
-					Version: "0.0.1",
+					Version: s.SwaggerInfo.Version,
 				},
 			},
-			BasePath: s.SwaggerInfo.BasePath,
+			BasePath: s.BasePath,
 			Paths: &spec.Paths{
 				Paths: map[string]spec.PathItem{},
 			},

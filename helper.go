@@ -17,14 +17,11 @@ func New() *Helper {
 	return &Helper{routers: routerView{}}
 }
 
-func NewWithSwagger(r GinRouter) *Helper {
+func NewWithSwagger(swaggerInfo *SwaggerInfo, r GinRouter) *Helper {
 	swg := &Swagger{
-		Router: r.Group("swagger"),
-		SwaggerInfo: &SwaggerInfo{
-			BasePath:    r.BasePath(),
-			Description: "Swagger test",
-			Title:       "GinHelper Swagger",
-		},
+		Router:      r.Group("swagger"),
+		BasePath:    r.BasePath(),
+		SwaggerInfo: swaggerInfo,
 	}
 	swg.Init()
 	return &Helper{routers: routerView{}, Swagger: swg}

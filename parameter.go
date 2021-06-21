@@ -33,8 +33,8 @@ func (param *BaseParam) Handler(c *gin.Context) (data Data, err error) {
 
 func (param *BaseParam) Result(c *gin.Context, data Data, err error) {
 	if err != nil {
-		c.String(http.StatusBadRequest, "%s", gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	} else {
-		c.String(http.StatusOK, "%s", data)
+		c.JSON(http.StatusOK, data)
 	}
 }

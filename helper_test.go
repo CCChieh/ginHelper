@@ -9,46 +9,42 @@ import (
 func TestHelper(t *testing.T) {
 	router := gin.Default()
 	r := router.Group("api")
-	h := NewWithSwagger(r)
-	h.Add(GroupR, r)
+	h := NewWithSwagger(&SwaggerInfo{
+		Description: "",
+		Title:       "",
+		Version:     "",
+		ContactInfo: ContactInfo{},
+	}, r)
+	h.Add(testGroup, r)
 	router.Run(":8888")
 }
 
-var GroupR = &GroupRouter{
-	Path: "my",
+var testGroup = &GroupRouter{
+	Path: "test",
 	Name: "Mytest",
 	Routers: []*Router{
 		{
-			Param:  new(HelloParam),
-			Path:   "/hello/:kkk",
+			Param:  new(testBodyParam),
+			Path:   "/hello/:id",
 			Method: "POST",
 		}},
 }
 
-type HelloParam struct {
-	BaseParam
-	Vparam
-	Vparam1 Vparam
-	Vparam2 *Vparam
-	Foo     string `json:"foo4"`
-	Va
-	Ch    byte
-	Arr   []string
-	Arr2  []int
-	Arr3  []Vparam
-	Int   int
-	Float float32
-	Bool  bool
-	// Bar string `json:"bar" binding:"required"`
+type testBodyParam struct {
+	BaseParam `json:"-"`
+	Foo       string `binding:"required"`
+	FooName   string `json:"fName" binding:"required"`
+	FooInt    int    `binding:"required"`
+	FooStruct
+	FooStruct2 FooStruct
+	FooStruct3 *FooStruct
 }
 
-type Va bool
-
-type Vparam struct {
-	Bar  string `json:"bar" binding:"required"`
-	Bare bool   `json:"bare" binding:"required"`
+type FooStruct struct {
+	FooA string `binding:"required"`
+	FooB bool   `binding:"required"`
 }
 
-func (param *HelloParam) Handler(c *gin.Context) (Data, error) {
-	return getMessage(param.Foo) + getMessage(param.Bar), nil
+func (param *testBodyParam) Handler(c *gin.Context) (Data, error) {
+	return param, nil
 }
