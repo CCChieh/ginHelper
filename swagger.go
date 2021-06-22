@@ -67,8 +67,6 @@ func (s *Swagger) AddPath(sp *SwaggerApi) {
 			PathItemProps: spec.PathItemProps{},
 		}
 	}
-	test := &spec.Schema{}
-	test.SetProperty("dddsf", *spec.StringProperty())
 
 	operation := &spec.Operation{
 		VendorExtensible: spec.VendorExtensible{},
@@ -143,6 +141,7 @@ func (s *Swagger) parameters(sp *SwaggerApi) (params []spec.Parameter) {
 	}
 	if method == http.MethodGet {
 		params = append(params, queryParams(reflect.TypeOf(param))...)
+		return params
 	}
 	params = append(params, *spec.BodyParam("body", JsonSchemas(reflect.TypeOf(param))))
 	return params
