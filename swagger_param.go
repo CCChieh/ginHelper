@@ -79,9 +79,8 @@ func JsonSchemas(typeOf reflect.Type) (schema *spec.Schema) {
 func kindArray2Schema(typeOf reflect.Type) *spec.Schema {
 	return spec.ArrayProperty(JsonSchemas(typeOf.Elem()))
 }
-func kindStruct2Schema(typeOf reflect.Type) *spec.Schema {
-	schema := &spec.Schema{SchemaProps: spec.SchemaProps{Type: []string{"object"},
-		AdditionalProperties: nil}}
+func kindStruct2Schema(typeOf reflect.Type) (schema *spec.Schema) {
+
 	fields := getAllField(typeOf)
 	for len(fields) > 0 {
 		field := fields[0]
@@ -109,7 +108,15 @@ func kindStruct2Schema(typeOf reflect.Type) *spec.Schema {
 			}
 			continue
 		}
-		schema.SetProperty(name, *JsonSchemas(field.Type))
+		prop := JsonSchemas(field.Type)
+		if prop == nil {
+			continue
+		}
+		if schema == nil {
+			schema = &spec.Schema{SchemaProps: spec.SchemaProps{Type: []string{"object"},
+				AdditionalProperties: nil}}
+		}
+		schema.SetProperty(name, *prop)
 	}
 	return schema
 }

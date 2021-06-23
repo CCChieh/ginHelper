@@ -143,6 +143,9 @@ func (s *Swagger) parameters(sp *SwaggerApi) (params []spec.Parameter) {
 		params = append(params, queryParams(reflect.TypeOf(param))...)
 		return params
 	}
-	params = append(params, *spec.BodyParam("body", JsonSchemas(reflect.TypeOf(param))))
+	jsonS := JsonSchemas(reflect.TypeOf(param))
+	if jsonS != nil {
+		params = append(params, *spec.BodyParam("body", jsonS))
+	}
 	return params
 }

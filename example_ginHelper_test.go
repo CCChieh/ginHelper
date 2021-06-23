@@ -4,6 +4,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var exGroup = &GroupRouter{
+	Path: "example",
+	Name: "Mytest",
+	Routes: []*Route{
+		{
+			Param:  new(exParam),
+			Path:   "/foo/:id",
+			Method: "POST",
+		}},
+}
+
+type exParam struct {
+	BaseParam
+}
+
 func ExampleNewWithSwagger() {
 	router := gin.Default()
 	r := router.Group("api")
@@ -17,6 +32,10 @@ func ExampleNewWithSwagger() {
 			Email: "email@zzj.cool",
 		},
 	}, r)
-	h.Add(testGroup, r)
+	h.Add(exGroup, r)
 	_ = router.Run(":8888")
 }
+
+// func TestExample(t *testing.T) {
+// 	ExampleNewWithSwagger()
+// }
