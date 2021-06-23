@@ -85,9 +85,18 @@ func kindStruct2Schema(typeOf reflect.Type) (schema *spec.Schema) {
 	for len(fields) > 0 {
 		field := fields[0]
 		fields = fields[1:]
-		name := field.Tag.Get("json")
-		if name == "" {
+		tags, ok := field.Tag.Lookup("json")
+		name := ""
+
+		if !ok {
 			name = lcfirst(field.Name)
+		} else {
+			idx := strings.Index(tags, ",")
+			if idx < 0 {
+				name = tags
+			} else {
+				name = tags[:idx]
+			}
 		}
 		if name == "-" {
 			continue
