@@ -27,6 +27,7 @@ func NewWithSwagger(swaggerInfo *SwaggerInfo, r GinRouter) *Helper {
 
 func (h *Helper) Add(gh *GroupRouter, r GinRouter) {
 	r = r.Group(gh.Path)
+	h.Swagger.AddTag(gh.Name, gh.Description)
 	for _, rt := range gh.Routes {
 		rt.AddHandler(r)
 		h.addPath(rt, r, gh.Name)
@@ -40,10 +41,11 @@ func (h *Helper) addPath(rt *Route, r GinRouter, elemName string) {
 
 	apiPath := path.Join(h.cleanPath(h.Swagger.BasePath, r.BasePath()), rt.Path)
 	h.Swagger.AddPath(&SwaggerApi{
-		Path:   apiPath,
-		Method: rt.Method,
-		Tags:   []string{elemName},
-		Param:  rt.Param,
+		Summary: rt.Summary,
+		Path:    apiPath,
+		Method:  rt.Method,
+		Tags:    []string{elemName},
+		Param:   rt.Param,
 	})
 	_, ok := h.routers[apiPath]
 	if !ok {

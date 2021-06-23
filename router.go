@@ -14,15 +14,17 @@ type GinRouter interface {
 }
 
 type GroupRouter struct {
-	Path   string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
-	Name   string   // 路由组的名称
-	Routes []*Route // 路由组中的具体路由
+	Path        string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
+	Name        string   // 路由组的名称
+	Description string   // 路由组的说明
+	Routes      []*Route // 路由组中的具体路由
 }
 
 type Route struct {
 	Param    Parameter         // 接口的参数
 	Path     string            // 接口的路径
 	Method   string            // 接口的方法
+	Summary  string            // 接口说明
 	Handlers []gin.HandlerFunc // 接口的处理函数
 }
 

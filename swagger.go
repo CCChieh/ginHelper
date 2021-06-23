@@ -58,6 +58,10 @@ func (s *Swagger) Init() {
 	_ = s.Router.StaticFS("", http.FS(swaggerDir))
 }
 
+func (s *Swagger) AddTag(tagName, description string) {
+	s.Spec.Tags = append(s.Spec.Tags, spec.NewTag(tagName, description, nil))
+}
+
 func (s *Swagger) AddPath(sp *SwaggerApi) {
 	sp.Path = path.Join("/", sp.Path)
 	sp.Path = path.Clean(sp.Path)
