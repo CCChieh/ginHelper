@@ -59,9 +59,6 @@ func (s *Swagger) Init() {
 }
 
 func (s *Swagger) AddTag(tagName, description string) {
-	if s.Spec == nil {
-		return
-	}
 	s.Spec.Tags = append(s.Spec.Tags, spec.NewTag(tagName, description, nil))
 }
 

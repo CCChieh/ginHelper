@@ -27,7 +27,9 @@ func NewWithSwagger(swaggerInfo *SwaggerInfo, r GinRouter) *Helper {
 
 func (h *Helper) Add(gh *GroupRouter, r GinRouter) {
 	r = r.Group(gh.Path)
-	h.Swagger.AddTag(gh.Name, gh.Description)
+	if h.Swagger != nil {
+		h.Swagger.AddTag(gh.Name, gh.Description)
+	}
 	for _, rt := range gh.Routes {
 		rt.AddHandler(r)
 		h.addPath(rt, r, gh.Name)
