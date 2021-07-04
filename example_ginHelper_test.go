@@ -1,6 +1,8 @@
 package ginHelper
 
 import (
+	"testing"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +19,13 @@ var exGroup = &GroupRouter{
 
 type exParam struct {
 	BaseParam
+	Foo  string `json:"foo"`
+	Id   string `uri:"id"`
+	Auth string `header:"auth" json:"-"`
+}
+
+func (param *exParam) Handler(c *gin.Context) (data Data, err error) {
+	return param, nil
 }
 
 func ExampleNewWithSwagger() {
@@ -33,9 +42,9 @@ func ExampleNewWithSwagger() {
 		},
 	}, r)
 	h.Add(exGroup, r)
-	_ = router.Run(":8888")
+	_ = router.Run(":12321")
 }
 
-// func TestExample(t *testing.T) {
-// 	ExampleNewWithSwagger()
-// }
+func TestExample(t *testing.T) {
+	ExampleNewWithSwagger()
+}

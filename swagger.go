@@ -143,10 +143,13 @@ func (s *Swagger) parameters(sp *SwaggerApi) (params []spec.Parameter) {
 	if param == nil {
 		return nil
 	}
+	// 解析header
+	params = append(params, headerParams(reflect.TypeOf(param))...)
 	if method == http.MethodGet {
 		params = append(params, queryParams(reflect.TypeOf(param))...)
 		return params
 	}
+	// 解析获取json
 	jsonS := JsonSchemas(reflect.TypeOf(param))
 	if jsonS != nil {
 		params = append(params, *spec.BodyParam("body", jsonS))

@@ -45,6 +45,24 @@ func queryParams(typeOf reflect.Type) []spec.Parameter {
 	return params
 }
 
+func headerParams(typeOf reflect.Type) []spec.Parameter {
+	typeOf = typeElem(typeOf)
+	params := []spec.Parameter{}
+	fieldNum := typeOf.NumField()
+	for i := 0; i < fieldNum; i++ {
+		field := typeOf.FieldByIndex([]int{i})
+		if field.Type.Kind() == reflect.Struct {
+			params = append(params, headerParams(field.Type)...)
+			continue
+		}
+		formName := field.Tag.Get("header")
+		if formName != "" {
+			params = append(params, *spec.HeaderParam(formName))
+		}
+	}
+	return params
+}
+
 func JsonSchemas(typeOf reflect.Type) (schema *spec.Schema) {
 
 	typeOf = typeElem(typeOf)
@@ -85,6 +103,7 @@ func kindStruct2Schema(typeOf reflect.Type) (schema *spec.Schema) {
 	for len(fields) > 0 {
 		field := fields[0]
 		fields = fields[1:]
+
 		tags, ok := field.Tag.Lookup("json")
 		name := ""
 

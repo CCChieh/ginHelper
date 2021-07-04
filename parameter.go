@@ -23,6 +23,12 @@ func (param *BaseParam) Bind(c *gin.Context, p Parameter) (err error) {
 	if err := c.ShouldBind(p); err != nil {
 		return err
 	}
+	if err := c.ShouldBindUri(p); err != nil {
+		return err
+	}
+	if err := c.ShouldBindHeader(p); err != nil {
+		return err
+	}
 	return err
 }
 

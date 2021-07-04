@@ -7,7 +7,6 @@
 * 整合gin的参数绑定与路由设置
 * 非注释自动生成swagger
 
-
 ## 路由与参数
 
 为了自动绑定参数和生成路由，需要先了解下面几个概念：
@@ -16,9 +15,9 @@
 
 ```go
 type GroupRouter struct {
-	Path   string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
-	Name   string   // 路由组的名称
-	Routes []*Route // 路由组中的具体路由
+ Path   string   // 路由组的根路径，与Gin的Group一样，定义一组接口的公共路径
+ Name   string   // 路由组的名称
+ Routes []*Route // 路由组中的具体路由
 }
 ```
 
@@ -28,10 +27,10 @@ type GroupRouter struct {
 
 ```go
 type Route struct {
-	Param    Parameter         // 接口的参数实现
-	Path     string            // 接口的路径
-	Method   string            // 接口的方法
-	Handlers []gin.HandlerFunc // 接口的额外处理函数
+ Param    Parameter         // 接口的参数实现
+ Path     string            // 接口的路径
+ Method   string            // 接口的方法
+ Handlers []gin.HandlerFunc // 接口的额外处理函数
 }
 ```
 
@@ -41,9 +40,9 @@ type Route struct {
 
 ```go
 type Parameter interface {
-	Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
-	Handler(c *gin.Context) (data Data, err error) //执行具体业务
-	Result(c *gin.Context, data Data, err error)   //结果返回
+ Bind(c *gin.Context, p Parameter) (err error)  //绑定参数
+ Handler(c *gin.Context) (data Data, err error) //执行具体业务
+ Result(c *gin.Context, data Data, err error)   //结果返回
 }
 ```
 
@@ -58,54 +57,54 @@ type Parameter interface {
 ```go
 // 定义一个Group
 var testGroup = &ginHelper.GroupRouter{
-	Path: "test",
-	Name: "Mytest",
-	Routes: []*ginHelper.Route{
-		{
-			Param:  new(testBodyParam),
-			Path:   "/hello/:id",
-			Method: "POST",
-		}},
+ Path: "test",
+ Name: "Mytest",
+ Routes: []*ginHelper.Route{
+  {
+   Param:  new(testBodyParam),
+   Path:   "/hello/:id",
+   Method: "POST",
+  }},
 }
 
 type FooStruct struct {
-	FooA string `binding:"required" `
-	FooB *bool  `binding:"required"`
+ FooA string `binding:"required" `
+ FooB *bool  `binding:"required"`
 }
 
 // 接口的参数
 type testBodyParam struct {
-	ginHelper.BaseParam `json:"-"`
-	Foo       string    `binding:"required"`
-	FooName   string    `json:"fName" binding:"required"`
-	FooInt    int       `binding:"required"`
-	FooIgnore string    `json:"-"`
-	FooStruct
-	FooStruct2 FooStruct
-	FooStruct3 *FooStruct
+ ginHelper.BaseParam `json:"-"`
+ Foo       string    `binding:"required"`
+ FooName   string    `json:"fName" binding:"required"`
+ FooInt    int       `binding:"required"`
+ FooIgnore string    `json:"-"`
+ FooStruct
+ FooStruct2 FooStruct
+ FooStruct3 *FooStruct
 }
 
 func (param *testBodyParam) Handler(c *gin.Context) (data ginHelper.Data, err error) {
-	return param, nil
+ return param, nil
 }
 
 
 func Example() {
-	router := gin.Default()
-	r := router.Group("api")
+ router := gin.Default()
+ r := router.Group("api")
     // 如果不需要swagger，可以使用New初始化
-	h := ginHelper.NewWithSwagger(&ginHelper.SwaggerInfo{
-		Description: "swagger test page",
-		Title:       "Swagger Test Page",
-		Version:     "0.0.1",
-		ContactInfoProps: ginHelper.ContactInfoProps{
-			Name:  "zzj",
-			URL:   "https://zzj.cool",
-			Email: "email@zzj.cool",
-		},
-	}, r)
-	h.Add(testGroup, r)
-	_ = router.Run(":8888")
+ h := ginHelper.NewWithSwagger(&ginHelper.SwaggerInfo{
+  Description: "swagger test page",
+  Title:       "Swagger Test Page",
+  Version:     "0.0.1",
+  ContactInfoProps: ginHelper.ContactInfoProps{
+   Name:  "zzj",
+   URL:   "https://zzj.cool",
+   Email: "email@zzj.cool",
+  },
+ }, r)
+ h.Add(testGroup, r)
+ _ = router.Run(":8888")
 }
 ```
 
